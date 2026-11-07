@@ -67,7 +67,24 @@ def _claude_command() -> dict:
     }
 
 
+def _utf8_stdio() -> None:
+    """Force UTF-8 on stdout/stderr.
+
+    Windows consoles default to a legacy code page (cp1252/cp936) and would
+    raise UnicodeEncodeError on non-ASCII diagnostics.  JSON-RPC on stdio is
+    UTF-8 as well, so this is safe for the server mode too.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            try:
+                reconfigure(encoding="utf-8")
+            except Exception:
+                pass
+
+
 def main(argv: list[str] | None = None) -> int:
+    _utf8_stdio()
     parser = argparse.ArgumentParser(
         prog="cam350-mcp",
         description="CAM350 12.x automation MCP server (stdio).",
