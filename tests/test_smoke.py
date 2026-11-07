@@ -16,6 +16,8 @@ def _run(*args: str, env: dict | None = None) -> subprocess.CompletedProcess[str
         [sys.executable, "-m", "cam350_mcp.cli", *args],
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=120,
         env=env,
     )
